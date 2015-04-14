@@ -6,6 +6,7 @@
 package es.us.mwm.twitter.gui;
 
 import es.us.mwm.twitter.client.TwitterClient;
+import es.us.mwm.twitter.configuracion.SingletonConfiguracion;
 import es.us.mwm.twitter.entities.trends.Trend;
 import es.us.mwm.twitter.entities.trends.TrendsSearch;
 import es.us.mwm.twitter.entities.tweets.Tweet;
@@ -21,7 +22,6 @@ import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.ws.rs.core.GenericType;
@@ -36,6 +36,7 @@ public class TwitterJFrame extends javax.swing.JFrame {
 
     private TwitterClient client;
     private DefaultListModel statusesListModel = new DefaultListModel();
+    private SingletonConfiguracion configuracion;
     
     
     /**
@@ -43,6 +44,7 @@ public class TwitterJFrame extends javax.swing.JFrame {
      */
     public TwitterJFrame() {
         client = new TwitterClient();
+        configuracion = SingletonConfiguracion.getInstance();
         initComponents();
         try{
             initUserInfo();
@@ -82,7 +84,7 @@ public class TwitterJFrame extends javax.swing.JFrame {
                     }
 
                 }
-            }, 500, 100000);
+            }, configuracion.getDelay_mmsec(), configuracion.getPeriod_mmsec());
         }catch(IOException ex){
             Logger.getLogger(TwitterJFrame.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("Error con la conexión de Twitter");
@@ -108,8 +110,10 @@ public class TwitterJFrame extends javax.swing.JFrame {
         jLblTweetsDownloaded = new javax.swing.JLabel();
         jMnuBarClienteTwitter = new javax.swing.JMenuBar();
         jMnuArchivo = new javax.swing.JMenu();
-        jMnuTrending = new javax.swing.JMenu();
-        jMenu2 = new javax.swing.JMenu();
+        jMnuItemTrendingTopic = new javax.swing.JMenuItem();
+        jMnuItemConfig = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMnuItemExit = new javax.swing.JMenuItem();
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -156,14 +160,14 @@ public class TwitterJFrame extends javax.swing.JFrame {
             }
         });
         jTxtEstado.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                jTxtEstadoKeyTyped(evt);
-            }
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 jTxtEstadoKeyPressed(evt);
             }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTxtEstadoKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTxtEstadoKeyTyped(evt);
             }
         });
 
@@ -194,19 +198,48 @@ public class TwitterJFrame extends javax.swing.JFrame {
             .addComponent(jLblNumChar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLblTweetsDownloaded, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLblTweetsDownloaded, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         jMnuArchivo.setText("Archivo");
+        jMnuArchivo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMnuArchivoMouseClicked(evt);
+            }
+        });
 
-        jMnuTrending.setText("Trending Topics");
-        jMnuArchivo.add(jMnuTrending);
+        jMnuItemTrendingTopic.setText("Trending Topics");
+        jMnuItemTrendingTopic.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMnuItemTrendingTopicMouseClicked(evt);
+            }
+        });
+        jMnuItemTrendingTopic.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMnuItemTrendingTopicActionPerformed(evt);
+            }
+        });
+        jMnuArchivo.add(jMnuItemTrendingTopic);
+
+        jMnuItemConfig.setText("Configuración");
+        jMnuItemConfig.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMnuItemConfigActionPerformed(evt);
+            }
+        });
+        jMnuArchivo.add(jMnuItemConfig);
+        jMnuArchivo.add(jSeparator1);
+
+        jMnuItemExit.setText("Salir");
+        jMnuItemExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMnuItemExitActionPerformed(evt);
+            }
+        });
+        jMnuArchivo.add(jMnuItemExit);
 
         jMnuBarClienteTwitter.add(jMnuArchivo);
-
-        jMenu2.setText("Edit");
-        jMnuBarClienteTwitter.add(jMenu2);
 
         setJMenuBar(jMnuBarClienteTwitter);
 
@@ -215,30 +248,28 @@ public class TwitterJFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLblAvatar, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTxtEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jBttnTweet, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jLblAvatar, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(14, 14, 14)
+                .addComponent(jTxtEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jBttnTweet, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 481, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLblAvatar, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTxtEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jBttnTweet, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTxtEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jBttnTweet, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -290,6 +321,34 @@ public class TwitterJFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jBttnTweetActionPerformed
 
+    private void jMnuArchivoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMnuArchivoMouseClicked
+        // TODO add your handling code here:
+ 
+    }//GEN-LAST:event_jMnuArchivoMouseClicked
+
+    private void jMnuItemTrendingTopicMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMnuItemTrendingTopicMouseClicked
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(new JFrame(), "Error en la conexión con Twitter" , "Dialog",
+        JOptionPane.ERROR_MESSAGE);
+        System.err.println("Error!!!");
+    }//GEN-LAST:event_jMnuItemTrendingTopicMouseClicked
+
+    private void jMnuItemTrendingTopicActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuItemTrendingTopicActionPerformed
+        // TODO add your handling code here:
+       TrendingTopics tTopcis =  new TrendingTopics();
+        tTopcis.setVisible(true);
+    }//GEN-LAST:event_jMnuItemTrendingTopicActionPerformed
+
+    private void jMnuItemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuItemExitActionPerformed
+        // TODO add your handling code here:
+        System.exit(0);
+    }//GEN-LAST:event_jMnuItemExitActionPerformed
+
+    private void jMnuItemConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuItemConfigActionPerformed
+        Configuracion config = new Configuracion();
+        config.setVisible(true);
+    }//GEN-LAST:event_jMnuItemConfigActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -308,13 +367,15 @@ public class TwitterJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLblNumChar;
     private javax.swing.JLabel jLblTweetsDownloaded;
     private javax.swing.JList jLstTweet;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenu jMnuArchivo;
     private javax.swing.JMenuBar jMnuBarClienteTwitter;
-    private javax.swing.JMenu jMnuTrending;
+    private javax.swing.JMenuItem jMnuItemConfig;
+    private javax.swing.JMenuItem jMnuItemExit;
+    private javax.swing.JMenuItem jMnuItemTrendingTopic;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JTextField jTxtEstado;
     // End of variables declaration//GEN-END:variables
 
