@@ -5,17 +5,29 @@
  */
 package es.us.mwm.twitter.gui;
 
+import es.us.mwm.twitter.client.TwitterClient;
+import javax.swing.DefaultListModel;
+import javax.ws.rs.core.Response;
+
 /**
  *
  * @author fperez
  */
 public class TrendingTopics extends javax.swing.JFrame {
 
+    private DefaultListModel trendingListModel = new DefaultListModel();
+    
     /**
      * Creates new form TrendingTopics
      */
     public TrendingTopics() {
         initComponents();
+        trendingListModel.clear();
+    }
+    
+    public TrendingTopics(TwitterClient client){
+        this();
+        Response response = client.getTrends(null);
     }
 
     /**
@@ -38,11 +50,7 @@ public class TrendingTopics extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         jLabel1.setText("Trending Topics");
 
-        jList1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
+        jList1.setModel(trendingListModel);
         jScrollPane1.setViewportView(jList1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -52,7 +60,7 @@ public class TrendingTopics extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1)
                 .addGap(0, 0, Short.MAX_VALUE))
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

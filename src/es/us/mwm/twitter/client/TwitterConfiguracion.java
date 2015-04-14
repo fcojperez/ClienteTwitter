@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package es.us.mwm.twitter.configuracion;
+package es.us.mwm.twitter.client;
 
 /**
  *
  * @author fperez
  */
-public class SingletonConfiguracion {
-    private static SingletonConfiguracion instance = null;
+public class TwitterConfiguracion {
+    private static TwitterConfiguracion instance = null;
     private long delay_mmsec = 500;
     private long period_mmsec = 100000;
     private int num_tweets = 20;
@@ -18,9 +18,9 @@ public class SingletonConfiguracion {
     /**
      * @return the instance
      */
-    public static SingletonConfiguracion getInstance() {
+    public static TwitterConfiguracion getInstance() {
         if(instance == null){
-            return new SingletonConfiguracion();
+            return new TwitterConfiguracion();
         }
         return instance;
     }
@@ -53,7 +53,7 @@ public class SingletonConfiguracion {
         period_mmsec = aPeriod_mmsec;
     }
     
-    protected SingletonConfiguracion(){
+    protected TwitterConfiguracion(){
     }
 
     /**
@@ -70,5 +70,12 @@ public class SingletonConfiguracion {
         this.num_tweets = num_tweets;
     }
     
+    public String toString(){
+        String msg;
+        msg = "Numero Tweets: " + this.getNum_tweets() + "\n";
+        msg += "Timer.Period: " + this.getPeriod_mmsec() + "\n";
+        msg += "Timer.Delay: " + this.getDelay_mmsec() + "\n";
+        return msg;
+    }
     
 }

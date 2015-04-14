@@ -5,7 +5,8 @@
  */
 package es.us.mwm.twitter.gui;
 
-import es.us.mwm.twitter.configuracion.SingletonConfiguracion;
+import es.us.mwm.twitter.client.TwitterClient;
+import es.us.mwm.twitter.client.TwitterConfiguracion;
 
 /**
  *
@@ -13,19 +14,26 @@ import es.us.mwm.twitter.configuracion.SingletonConfiguracion;
  */
 public class Configuracion extends javax.swing.JFrame {
 
-    private SingletonConfiguracion configuracion;
+    private TwitterConfiguracion configuracion;
     /**
      * Creates new form Configuracion
      */
     public Configuracion() {
-        configuracion = SingletonConfiguracion.getInstance();
         initComponents();
-        jSlderNumTweets.setValue(configuracion.getNum_tweets());
-        jLblNumTweetsValue.setText(String.valueOf(jSlderNumTweets.getValue()));
-        this.jLblTimerValue.setText(String.valueOf(jSlderTimer.getValue()*1000));
     }
     
-
+    public Configuracion(TwitterClient client){
+        this();
+        configuracion = client.getConfiguracion();
+        
+        //Configuracion de num de tweets
+        jSlderNumTweets.setValue(configuracion.getNum_tweets());
+        jLblNumTweetsValue.setText(String.valueOf(jSlderNumTweets.getValue()));
+        
+        //Configuracion del timer
+        this.jSlderTimer.setValue((int) configuracion.getPeriod_mmsec()/1000);        
+        this.jLblTimerValue.setText(String.valueOf(jSlderTimer.getValue()*1000));
+    }
             
 
     /**

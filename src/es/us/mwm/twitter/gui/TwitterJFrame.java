@@ -6,7 +6,7 @@
 package es.us.mwm.twitter.gui;
 
 import es.us.mwm.twitter.client.TwitterClient;
-import es.us.mwm.twitter.configuracion.SingletonConfiguracion;
+import es.us.mwm.twitter.client.TwitterConfiguracion;
 import es.us.mwm.twitter.entities.trends.Trend;
 import es.us.mwm.twitter.entities.trends.TrendsSearch;
 import es.us.mwm.twitter.entities.tweets.Tweet;
@@ -14,6 +14,8 @@ import java.awt.Color;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,7 +38,6 @@ public class TwitterJFrame extends javax.swing.JFrame {
 
     private TwitterClient client;
     private DefaultListModel statusesListModel = new DefaultListModel();
-    private SingletonConfiguracion configuracion;
     
     
     /**
@@ -44,7 +45,6 @@ public class TwitterJFrame extends javax.swing.JFrame {
      */
     public TwitterJFrame() {
         client = new TwitterClient();
-        configuracion = SingletonConfiguracion.getInstance();
         initComponents();
         try{
             initUserInfo();
@@ -56,7 +56,19 @@ public class TwitterJFrame extends javax.swing.JFrame {
                 public void run() {
                     try{
                         System.out.println("Timer Task se está ejecutando");
-
+                        System.out.println("Configuración");
+                        System.out.println(client.getConfiguracion().toString());
+                        
+                        
+                        java.util.Date date= new java.util.Date();
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                        System.out.println("Fecha/Hora Ejecución: " + sdf.format(date.getTime()));
+                        
+                        //Determinar la fecha de actualizacion
+                        Calendar nextRefresco = Calendar.getInstance();
+                        nextRefresco.setTimeInMillis(date.getTime() + client.getConfiguracion().getPeriod_mmsec());
+                        System.out.println("Fecha/Hora Proxima Ejecución: " + sdf.format(nextRefresco.getTime().getTime()));
+                        
                         Response response = client.getFriendsTimeline();
 
                         statusesListModel.clear();
@@ -84,7 +96,7 @@ public class TwitterJFrame extends javax.swing.JFrame {
                     }
 
                 }
-            }, configuracion.getDelay_mmsec(), configuracion.getPeriod_mmsec());
+            }, client.getConfiguracion().getDelay_mmsec(), client.getConfiguracion().getPeriod_mmsec());
         }catch(IOException ex){
             Logger.getLogger(TwitterJFrame.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("Error con la conexión de Twitter");
@@ -345,7 +357,7 @@ public class TwitterJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMnuItemExitActionPerformed
 
     private void jMnuItemConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuItemConfigActionPerformed
-        Configuracion config = new Configuracion();
+        Configuracion config = new Configuracion(client);
         config.setVisible(true);
     }//GEN-LAST:event_jMnuItemConfigActionPerformed
 

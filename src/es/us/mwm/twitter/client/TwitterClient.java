@@ -20,6 +20,7 @@ public class TwitterClient {
     private static final String TRENDS_URI = "https://api.twitter.com/1.1/trends/place.json";
     private static final String POST_TWEET_URI = "https://api.twitter.com/1.1/statuses/update.json";
     private static int numeroDeLlamadas = 0;
+    private TwitterConfiguracion configuracion;
     
     
     private Client client;
@@ -27,16 +28,16 @@ public class TwitterClient {
     public TwitterClient() {
         try {
             client = TwitterAuthorization.createClient();
+            configuracion = TwitterConfiguracion.getInstance();
         } catch (Exception ex) {
             Logger.getLogger(TwitterClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-   
-
     
     public Response getFriendsTimeline() {
-        final Response response = client.target(FRIENDS_TIMELINE_URI).request().get();
+        System.out.println("Numero de llamadas: " + ++numeroDeLlamadas);
+        final Response response = client.target(FRIENDS_TIMELINE_URI).queryParam("count", String.valueOf(getConfiguracion().getNum_tweets())).request().get();
         if (response.getStatus() != 200) {
             String errorEntity = null;
             if (response.hasEntity()) {
@@ -52,7 +53,7 @@ public class TwitterClient {
     
     public Response getUserTimeline(){
         System.out.println("Numero de llamadas: " + ++numeroDeLlamadas);
-        final Response response = client.target(USER_TIMELINE_URI).request().get();
+        final Response response = client.target(USER_TIMELINE_URI).queryParam("count", String.valueOf(getConfiguracion().getNum_tweets())).request().get();
         if(response.getStatus() != 200){
             String errorEntity = null;
             if(response.hasEntity()){
@@ -92,6 +93,20 @@ public class TwitterClient {
             + " , entity: " + errorEntity);
         }
         return response;
+    }
+
+    /**
+     * @return the configuracion
+     */
+    public TwitterConfiguracion getConfiguracion() {
+        return configuracion;
+    }
+
+    /**
+     * @param configuracion the configuracion to set
+     */
+    public void setConfiguracion(TwitterConfiguracion configuracion) {
+        this.configuracion = configuracion;
     }
     
 }
