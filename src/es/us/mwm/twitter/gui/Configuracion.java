@@ -52,10 +52,16 @@ public class Configuracion extends javax.swing.JFrame {
         jLblNumTweets.setText("Número de Tweets");
 
         jSlderNumTweets.setMaximum(20);
+        jSlderNumTweets.setMinimum(5);
         jSlderNumTweets.setMinorTickSpacing(5);
         jSlderNumTweets.setPaintLabels(true);
         jSlderNumTweets.setPaintTicks(true);
         jSlderNumTweets.setSnapToTicks(true);
+        jSlderNumTweets.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlderNumTweetsStateChanged(evt);
+            }
+        });
 
         jLblTiimerScheduled.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLblTiimerScheduled.setText("Timer");
@@ -66,6 +72,11 @@ public class Configuracion extends javax.swing.JFrame {
         jSlderTimer.setPaintLabels(true);
         jSlderTimer.setPaintTicks(true);
         jSlderTimer.setSnapToTicks(true);
+        jSlderTimer.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlderTimerStateChanged(evt);
+            }
+        });
 
         jLblTimerValue.setText("jLblTimerValue");
 
@@ -110,6 +121,19 @@ public class Configuracion extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jSlderTimerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlderTimerStateChanged
+        // TODO add your handling code here:
+        int periodo_mmsec = this.jSlderTimer.getValue()*1000;
+        this.jLblTimerValue.setText(String.valueOf(periodo_mmsec));
+        configuracion.setPeriod_mmsec(periodo_mmsec);
+    }//GEN-LAST:event_jSlderTimerStateChanged
+
+    private void jSlderNumTweetsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlderNumTweetsStateChanged
+        int numTweets = this.jSlderNumTweets.getValue();
+        this.jLblNumTweetsValue.setText(String.valueOf(numTweets));
+        configuracion.setNum_tweets(numTweets);
+    }//GEN-LAST:event_jSlderNumTweetsStateChanged
 
     /**
      * @param args the command line arguments

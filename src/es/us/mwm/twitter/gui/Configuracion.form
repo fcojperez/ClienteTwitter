@@ -80,11 +80,15 @@
     <Component class="javax.swing.JSlider" name="jSlderNumTweets">
       <Properties>
         <Property name="maximum" type="int" value="20"/>
+        <Property name="minimum" type="int" value="5"/>
         <Property name="minorTickSpacing" type="int" value="5"/>
         <Property name="paintLabels" type="boolean" value="true"/>
         <Property name="paintTicks" type="boolean" value="true"/>
         <Property name="snapToTicks" type="boolean" value="true"/>
       </Properties>
+      <Events>
+        <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="jSlderNumTweetsStateChanged"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLblTiimerScheduled">
       <Properties>
@@ -103,6 +107,9 @@
         <Property name="paintTicks" type="boolean" value="true"/>
         <Property name="snapToTicks" type="boolean" value="true"/>
       </Properties>
+      <Events>
+        <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="jSlderTimerStateChanged"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLblTimerValue">
       <Properties>
