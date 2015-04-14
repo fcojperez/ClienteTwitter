@@ -122,7 +122,6 @@ public class TwitterJFrame extends javax.swing.JFrame {
         jLblTweetsDownloaded = new javax.swing.JLabel();
         jMnuBarClienteTwitter = new javax.swing.JMenuBar();
         jMnuArchivo = new javax.swing.JMenu();
-        jMnuItemTrendingTopic = new javax.swing.JMenuItem();
         jMnuItemConfig = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         jMnuItemExit = new javax.swing.JMenuItem();
@@ -165,10 +164,10 @@ public class TwitterJFrame extends javax.swing.JFrame {
             }
         });
         jTxtEstado.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-            }
             public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
                 jTxtEstadoInputMethodTextChanged(evt);
+            }
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
             }
         });
         jTxtEstado.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -220,19 +219,6 @@ public class TwitterJFrame extends javax.swing.JFrame {
                 jMnuArchivoMouseClicked(evt);
             }
         });
-
-        jMnuItemTrendingTopic.setText("Trending Topics");
-        jMnuItemTrendingTopic.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jMnuItemTrendingTopicMouseClicked(evt);
-            }
-        });
-        jMnuItemTrendingTopic.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMnuItemTrendingTopicActionPerformed(evt);
-            }
-        });
-        jMnuArchivo.add(jMnuItemTrendingTopic);
 
         jMnuItemConfig.setText("Configuración");
         jMnuItemConfig.addActionListener(new java.awt.event.ActionListener() {
@@ -338,19 +324,6 @@ public class TwitterJFrame extends javax.swing.JFrame {
  
     }//GEN-LAST:event_jMnuArchivoMouseClicked
 
-    private void jMnuItemTrendingTopicMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMnuItemTrendingTopicMouseClicked
-        // TODO add your handling code here:
-        JOptionPane.showMessageDialog(new JFrame(), "Error en la conexión con Twitter" , "Dialog",
-        JOptionPane.ERROR_MESSAGE);
-        System.err.println("Error!!!");
-    }//GEN-LAST:event_jMnuItemTrendingTopicMouseClicked
-
-    private void jMnuItemTrendingTopicActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuItemTrendingTopicActionPerformed
-        // TODO add your handling code here:
-       TrendingTopics tTopcis =  new TrendingTopics();
-        tTopcis.setVisible(true);
-    }//GEN-LAST:event_jMnuItemTrendingTopicActionPerformed
-
     private void jMnuItemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuItemExitActionPerformed
         // TODO add your handling code here:
         System.exit(0);
@@ -384,7 +357,6 @@ public class TwitterJFrame extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMnuBarClienteTwitter;
     private javax.swing.JMenuItem jMnuItemConfig;
     private javax.swing.JMenuItem jMnuItemExit;
-    private javax.swing.JMenuItem jMnuItemTrendingTopic;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
