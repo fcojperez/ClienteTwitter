@@ -20,7 +20,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
@@ -30,7 +32,7 @@ import javax.ws.rs.core.Response;
  *
  * @author fcojperez
  */
-public class TwitterJFrame extends java.awt.Frame {
+public class TwitterJFrame extends javax.swing.JFrame {
 
     private TwitterClient client;
     private DefaultListModel statusesListModel = new DefaultListModel();
@@ -44,49 +46,47 @@ public class TwitterJFrame extends java.awt.Frame {
         initComponents();
         try{
             initUserInfo();
+            Timer timerTwitter = new Timer("TwitterTimer", false);
+            timerTwitter.scheduleAtFixedRate(new TimerTask(){
+
+
+                @Override
+                public void run() {
+                    try{
+                        System.out.println("Timer Task se está ejecutando");
+
+                        Response response = client.getFriendsTimeline();
+
+                        statusesListModel.clear();
+
+
+                        List<Tweet> statuses = response.readEntity(new GenericType<List<Tweet>>(){});
+
+                        for(final Tweet st: statuses){
+                            SwingUtilities.invokeLater(new Runnable(){
+
+                                @Override
+                                public void run() {
+                                    statusesListModel.addElement(st);
+                                }
+                            });
+                        }
+
+                        //Obtener de Tweets descargados.
+                        jLblTweetsDownloaded.setText("Tweets Descargados: " + String.valueOf(statuses.size()));
+
+                        //Fecha de Recarga
+
+                    }catch(RuntimeException ex){
+                        System.err.println("Excepcion llamando a getFriendsTimeLine. Detalles: " + ex.getMessage());
+                    }
+
+                }
+            }, 500, 100000);
         }catch(IOException ex){
             Logger.getLogger(TwitterJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Error con la conexión de Twitter");
         }
-        
-
-        
-        Timer timerTwitter = new Timer("TwitterTimer", false);
-        timerTwitter.scheduleAtFixedRate(new TimerTask(){
-            
-
-            @Override
-            public void run() {
-                try{
-                    System.out.println("Timer Task se está ejecutando");
-                    
-                    Response response = client.getFriendsTimeline();
-                    
-                    statusesListModel.clear();
-                    
-                    
-                    List<Tweet> statuses = response.readEntity(new GenericType<List<Tweet>>(){});
-                    
-                    for(final Tweet st: statuses){
-                        SwingUtilities.invokeLater(new Runnable(){
-
-                            @Override
-                            public void run() {
-                                statusesListModel.addElement(st);
-                            }
-                        });
-                    }
-                    
-                    //Obtener de Tweets descargados.
-                    jLblTweetsDownloaded.setText("Tweets Descargados: " + String.valueOf(statuses.size()));
-                    
-                    //Fecha de Recarga
-                    
-                }catch(RuntimeException ex){
-                    System.err.println("Excepcion llamando a getFriendsTimeLine. Detalles: " + ex.getMessage());
-                }
-                
-            }
-        }, 500, 100000);
     }
 
     /**
@@ -106,11 +106,15 @@ public class TwitterJFrame extends java.awt.Frame {
         jPanel2 = new javax.swing.JPanel();
         jLblNumChar = new javax.swing.JLabel();
         jLblTweetsDownloaded = new javax.swing.JLabel();
+        jMnuBarClienteTwitter = new javax.swing.JMenuBar();
+        jMnuArchivo = new javax.swing.JMenu();
+        jMnuTrending = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
 
         jMenuItem1.setText("jMenuItem1");
 
-        setResizable(false);
         setTitle("MWM Cliente Twitter");
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 exitForm(evt);
@@ -145,10 +149,10 @@ public class TwitterJFrame extends java.awt.Frame {
             }
         });
         jTxtEstado.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
             public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
                 jTxtEstadoInputMethodTextChanged(evt);
-            }
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
             }
         });
         jTxtEstado.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -190,12 +194,24 @@ public class TwitterJFrame extends java.awt.Frame {
             .addComponent(jLblNumChar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLblTweetsDownloaded, javax.swing.GroupLayout.DEFAULT_SIZE, 14, Short.MAX_VALUE)
+                .addComponent(jLblTweetsDownloaded, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
+        jMnuArchivo.setText("Archivo");
+
+        jMnuTrending.setText("Trending Topics");
+        jMnuArchivo.add(jMnuTrending);
+
+        jMnuBarClienteTwitter.add(jMnuArchivo);
+
+        jMenu2.setText("Edit");
+        jMnuBarClienteTwitter.add(jMenu2);
+
+        setJMenuBar(jMnuBarClienteTwitter);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1)
@@ -214,8 +230,7 @@ public class TwitterJFrame extends java.awt.Frame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 470, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 481, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLblAvatar, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -293,7 +308,11 @@ public class TwitterJFrame extends java.awt.Frame {
     private javax.swing.JLabel jLblNumChar;
     private javax.swing.JLabel jLblTweetsDownloaded;
     private javax.swing.JList jLstTweet;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenu jMnuArchivo;
+    private javax.swing.JMenuBar jMnuBarClienteTwitter;
+    private javax.swing.JMenu jMnuTrending;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTxtEstado;
@@ -301,22 +320,27 @@ public class TwitterJFrame extends java.awt.Frame {
 
     
     private void initUserInfo() throws MalformedURLException{
-        Response responseUserTimeline = client.getUserTimeline();
-        
-        List<Tweet> tweets = responseUserTimeline.readEntity(new GenericType<List<Tweet>>(){
-        });
-        
-        if(!tweets.isEmpty()){
-            Tweet ultimoTweet = tweets.get(0);
-            //jTxtEstado.setText(ultimoTweet.getText());
-            jTxtEstado.setText("¿Que quieres Twittear?");
-            jTxtEstado.setForeground(Color.GRAY);
-            String iconSrc = ultimoTweet.getUser().getProfile_image_url();
-            URL iconUrl = new URL(iconSrc);
-            ImageIcon icon = new ImageIcon(iconUrl,ultimoTweet.getUser().getName());
-            jLblAvatar.setIcon(icon);
+        try{
+            Response responseUserTimeline = client.getUserTimeline();
+
+            List<Tweet> tweets = responseUserTimeline.readEntity(new GenericType<List<Tweet>>(){
+            });
+
+            if(!tweets.isEmpty()){
+                Tweet ultimoTweet = tweets.get(0);
+                //jTxtEstado.setText(ultimoTweet.getText());
+                jTxtEstado.setText("¿Que quieres Twittear?");
+                jTxtEstado.setForeground(Color.GRAY);
+                String iconSrc = ultimoTweet.getUser().getProfile_image_url();
+                URL iconUrl = new URL(iconSrc);
+                ImageIcon icon = new ImageIcon(iconUrl,ultimoTweet.getUser().getName());
+                jLblAvatar.setIcon(icon);
+            }
+        }catch(Exception ex){
+            System.err.println("Error en la conexión con Twitter");
+            JOptionPane.showMessageDialog(new JFrame(), "Error en la conexión con Twitter" , "Dialog",
+        JOptionPane.ERROR_MESSAGE);
         }
-        
     }
     
     //TODO:7 metodo imprimirTrendingTopics()
